@@ -4,6 +4,12 @@ let express = require("express"),
 
 let todoRoutes = require("./routes/todos");
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// Everything in these folders will be served as static files
+app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/views"));
+
 const port = "3000";
 
 app.get("/", function(req, res) {
