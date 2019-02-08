@@ -1,19 +1,19 @@
 # Advanced Web Developer Bootcamp
 
 This course is broken into 4 major parts that cover different technologies.
-CSS, JS,
+CSS, JS, SVG & D3, React.
 
 - [x] CSS Animations
 - [x] CSS Flexbox
 - [x] CSS Project
 - [x] Async JS
-- [ ] AJAX
-- [ ] AJAX Projects
-- [ ] Testing w/ Jasmine
-- [ ] Advanced Array Methods
-- [ ] Closure & 'this'
-- [ ] OOP w/ JS
-- [ ] Creating APIs
+- [x] AJAX
+- [x] AJAX Projects
+- [x] Testing w/ Jasmine
+- [x] Advanced Array Methods
+- [x] Closure & 'this'
+- [x] OOP w/ JS
+- [x] Creating APIs
 - [ ] SPA w/ NodeJS
 - [ ] ES2015
 - [ ] Guess the Password Refactor
@@ -1344,9 +1344,25 @@ router
 module.exports = router;
 ```
 
-8.
+### Single-Page App
 
-routes/todos.js
+- Serve Static Files
+  > Make sure you have included Bodyparser
+
+```js
+bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+```
+
+```js
+// Everything in these folders will be served as static files
+app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/views"));
+```
+
+_Note: Potential CSS Error: Unable to load CSS due to MIME type Mismatch_ - just need to restart server to allow app to recognize the new static directories added.
 
 ## D3
 
