@@ -1364,6 +1364,10 @@ app.use(express.static(__dirname + "/views"));
 
 _Note: Potential CSS Error: Unable to load CSS due to MIME type Mismatch_ - just need to restart server to allow app to recognize the new static directories added.
 
+Front-end code in app.js
+
+`event.stopPropagation();` stops event from bubbling up to parent DOM elements.
+
 ## D3
 
 ## React
