@@ -1368,6 +1368,463 @@ Front-end code in app.js
 
 `event.stopPropagation();` stops event from bubbling up to parent DOM elements.
 
+### ES2015 Part 1
+
+**const**
+
+- unable to change the value of primitives
+- Able to change value when dealing with array or object. Still can't be redeclared
+
+**let**
+
+- There were function and global scope. Let is defined in a block scope (i.e. if, trycatch, do, while etc)
+- let does hoist, but we cannot access the value - it is defined inside the Temporal Dead Zone(TDZ)
+
+**Template Strings**
+
+- Defined within backticks `, variables defined within backticks require \$()
+
+**Arrow Functions**
+
+- Single parameter does not need to be wrapped inside parantheses
+- Need to remove `function` and `{}` from function declaration
+- Do not have their own `this` keyword! `this` will refer to its enclosing context (instructor object)
+- Do not get their `arguments` keyword. If arrow functions is inside of another function, arguments will refer to outer function arguments.
+
+**Default Parameters**
+
+```js
+function add(a = 10, b = 20) {
+	return a + b;
+}
+```
+
+**For...of**
+
+```js
+for (let val of arr) {
+	console.log(val);
+}
+```
+
+**Rest/Spread**
+
+- rest operator always returns an array
+- only called 'rest' when it is a parameter to a function
+- Useful when you have an array, but working with comma separated values
+
+```js
+let combined = [...arr1, ...arr2, ...arr3];
+
+function smallestValues(...args) {
+	return Math.min(...args);
+}
+
+function placeInMiddle(arr, vals) {
+	let mid = Math.floor(arr.length / 2);
+	arr.splice(mid, 0, ...vals);
+	return arr;
+}
+
+function joinArrays(...args) {
+	return args.reduce((acc, next) => acc.concat(next), []);
+}
+
+function sumEvenArgs(...args) {
+	return args.reduce((acc, next) => (next % 2 === 0 ? (acc += next) : acc), 0);
+}
+
+function flip(fn, thisArg, ...outerArgs) {
+	return function(...innerArgs) {
+		let allArgs = outerArgs.concat(innerArgs).slice(0, fn.length);
+	};
+	return fn.apply(thisArg, allArgs.reverse());
+}
+
+function bind(fn, thisArg, ...outerArgs) {
+	return function(...innerArgs) {
+		return fn.apply(thisArg, [...outerArgs, ...innerArgs]);
+	};
+}
+```
+
+**Object Methods**
+
+```js
+let instructor = {
+	sayHello() {
+		return "Hello!";
+	}
+};
+```
+
+**Computed Property Names**
+
+```js
+let firstName = "Elie";
+let instructor = {
+	[firstName]: "Thats Me!"
+};
+instructor.Elie; //Thats Me!
+```
+
+**Destructuring**
+
+```js
+function createInstructor({
+	name = { first: "Matt", last: "Lane" },
+	isHilarious = false
+} = {}) {
+	return [name.first, name.last, isHilarious];
+}
+
+createInstructor(); //['Matt', 'Lane', false]
+createInstructor({ isHilarious: true }); //['Matt','Lane',true]
+createInstructor({ name: { first: "Tim", last: "Garcia" } }); //['Tim','Garcia',false]
+
+function displayInfo({ name, favColor }) {
+	return [name, favColor];
+}
+
+let instructor = {
+	name: "Elie",
+	favColor: "Purple"
+};
+
+displayInfo(instructor); //['Elie','Purple']
+```
+
+- Passing in destructured object as a default parameter
+- Assign a default value as an empty object so ES2015 knows we are destructuring
+- If nothing is passed in, we default to the destructured object as the parameter.
+
+**Array Destructuring**
+`let arr = [1,2,3]`
+`let [a,b,c] = arr`
+
+Swapping values: `return [a,b] = [b,a]`
+
+```js
+function displayStudentInfo(obj) {
+	var { first, last } = obj;
+	return `your full name is ${first} ${last}`;
+}
+
+function printFullName({ first, last }) {
+	return `your full name is ${first} ${last}`;
+}
+
+function createStudent({ likesJS = true, likesES = true } = {}) {
+	var start = "The Student";
+	if (likesJS && likesES) {
+		start += " likes JavaScript and ES2015";
+	} else if (likesJS) {
+		start += " likes Javascript!";
+	} else if (likesES) {
+		start += " likes ES2015!";
+	} else {
+		start += " does not like much..";
+	}
+	return start;
+}
+
+function reverseArray(arr) {
+	for (var i = 0; i < arr.length / 2; i++) {
+		[arr[i], arr[arr.length - 1 - i]] = [arr[arr.length - 1 - i]];
+	}
+	return arr;
+}
+```
+
+**SUMMARY**
+
+- ES2015 gives us 2 new keywords for declaring variables, `let` and `const`. `const` ensures we cannot redeclare a variable, and `let` gives us block scope.
+- Easily evaluate variables in strings and create multi-line strings with ES2015 template strings. Don't forget the backticks!
+- Create more concise functions using the `=>` syntax, but these functions do not get their own `this` and `arguments` keywords
+- Gather `arguments` to a function as an array using the rest `...` operator and spread out values in an array to another value or function using `...`
+- Write more concise methods and property names using shorthand notation and computed property names
+- Object destructuring is very useful for reducing duplication and passing in default parameters as a destructured object
+- Array destructuring can also be used for swapping variables in an array without a separate swap function
+
+### ES2015 Part 2
+
+**class**
+In JS, there is no built-in support for `class` and OOP. We can use OOP to reduce code duplication and improve readability by using classes. In JS, This is done by using constructor functions, and the prototype property.
+
+- new reserved keyword
+- it creates a constant (cannot be redeclared)
+- it does not hoist
+- Still use `new` keyword to create objects
+
+Instance methods -> methods that can be accessed by objects created by the constructor function.
+
+Class methods are placed directly on the constructor function (with keyword `static`)
+
+```js
+class Student {
+	constructor(firstName, lastName) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+	static isStudent(obj) {
+		return obj.constructor === Student;
+	}
+}
+```
+
+_When are static methods useful?_
+
+- Don't want every obj created from a class to have its own method
+- Use the method without creating objects from that class
+- Check object type, when you can't use typeof(typeof returns object)
+- Examples: Object.create, Object.freeze
+
+**Inheritance**
+If one class extends another, it will have all the methods the extended class has.
+
+`class Student extends Person`
+
+**super**
+
+```js
+class Student extends Person {
+	//use super to duplicate the constructor function in parent class
+	constructor(firstName, lastName) {
+		super(firstName, lastName);
+	}
+}
+```
+
+**Maps**
+Used when
+
+- you need to look up keys dynamically
+- If you need keys that are not strings
+- If you are frequently add/removing key/value pairs
+
+```js
+let firstMap = new Map();
+
+firstMap.set(1, "Elie");
+firstMap.set(false, "a boolean");
+firstMap.set("nice", "a string");
+firstMap.delete("nice");
+firstMap.size; //2
+
+firstMap.values();
+firstMap.keys();
+```
+
+**WeakMap**
+
+- keys must be objects
+- Values in a WeakMap can be cleared from memory if no reference to them
+- More performant than maps, but cannot be iterated over.
+
+**Sets**
+
+- All values in a set are unique
+- Any type of value can exist ina Set
+- Created using `new` keyword
+
+```js
+let s = new Set();
+let s2 = new Set([3, 1, 3, 3, 4, 5, 1]); //{3,1,4,5}
+
+s2[Symbol.iterator];
+```
+
+**WeakSet**
+
+- All values must be objects
+- Same properties as WeakMap
+
+**Promises**
+
+```js
+function displayAtRandomTime() {
+	return new Promise((res, rej) => {
+		setTimeout(() => {
+			if (Math.random() > 0.5) {
+				resolve("Yes!");
+			} else {
+				reject("No!");
+			}
+		}, 1000);
+	});
+}
+```
+
+**Promise.all**
+
+- accepts an array of promises and resolves all of them, or is rejected once a single one of the promises have been rejected. (fail fast)
+- If all of the passed-in promises fulfill, Promise.all is fulfilled with an array of the values from the passed-in promises, in the same order as the promises passed in.
+
+```js
+Promise.all([promise1,promise2,promise3]).then((movies) => {
+	return movies.forEach(val => {
+		console.log(val);
+	})
+})
+
+
+function getMostFollowers(...usernames){
+	let baseUrl = 'https://api.github.com/users/';
+	let urls = usernames.map(username => $.getJSON(baseUrl + username));
+	return Promise.all(urls).then(data => {
+		let max = data.sort((a,b) => a.followers < b.followers)[0];
+		return `${max.name} has the most followers with ${max.followers}`;
+	})
+}
+
+function starWarsString(id){
+	let str = '';
+	return $.getJSON(`https://swapi.co/api/people/${id}/`).then(data => {
+		str += `${data.name} is featured in `;
+		let filmData = data.films[0];
+		return $.getJSON(filmData);
+	}).then(function(res) => {
+		str += `${res.title}, directed by ${res.director}`;
+		let planetData = res.planets[0];
+		return $.getJSON(planetData);
+	}).then(function(res) => {
+		str += `and it takes place on ${res.name}`;
+		return str;
+	})
+}
+
+```
+
+**Generators**
+
+- Pause execution and resume at any time
+- Created using a \*
+- When invoked, a generator object is returned to us with keys of value and done
+- Value is what is returned from the paused function using the `yield` keyword
+- `Done` is a boolean which returns true when the function has completed
+
+```js
+function* pauseAndReturnValues(num) {
+	for (let i = 0; i < num; i++) {
+		yield i;
+	}
+}
+
+var gen = pauseAndReturnValues(5);
+
+gen.next(); //{value: 0, done: false}
+gen.next(); //{value: 1, done: false}
+gen.next(); //{value: 2, done: false}
+etc.
+
+// Yield multiple Values
+function* printValues(){
+	yield 'First';
+	yield 'Second';
+	yield 'Third';
+}
+
+var g = printValues();
+g.next().value; //'First'
+g.next().value; //'Second'
+g.next().value; //'Third'
+
+// Iterating over a generator
+for(val of pauseAndReturnValues(3)){
+	console.log(val);
+}
+
+//0
+//1
+//2
+
+//Async Generators
+
+function* getMovieData(movieName){//returns a promise}
+
+var movieGetter = getMovieData('titanic');
+movieGetter.next().value.then(val => console.log(val));
+
+```
+
+**Object.assign**
+Creating a new object with the same keys and values without copying by reference.
+
+```js
+var o = { name: "Elie" };
+var o2 = Object.assign({}, o);
+
+o2.name = "Tim";
+o.name; //'Elie'
+```
+
+Object.assign does not create a deep clone. If we have objects inside of the object we are copying - those still have a reference.
+
+```js
+var o = { instructors: ["Elie", "Tim"] };
+var o2 = Object.assign({}, o);
+
+o2.instructors.push("Colt");
+
+o.instructors; //['Elie','Tim','Colt'];
+```
+
+**find**
+
+- invoked on arrays
+- accepts a callback w value, index and array
+- Returns the value found, or `undefined` if not found.
+
+**findIndex**
+
+- returns an index, or `-1` if not found
+
+**includes**
+
+- returns a boolean if a value is in a string(easier than using indexOf)
+
+**Number.isFinite**
+
+- handy way for handling NaN being a typeof number
+- Also has `Number.isInteger`
+
+```js
+function checkIfNumber(val) {
+	if (Number.isFinite(val)) {
+		return "It is a number";
+	}
+}
+```
+
+**SUMMARY**
+
+- `map` is useful when creating key-value pairs and the keys are not strings
+- `Sets` are useful for creating unique data sets and do not require key-value pairs
+- ES2015 Promise constructor allows for creating promises and resolving an array of promises with `Promise.all`
+- Generators are valuable when creating functions or methods that can pause and resume at any time
+
+```js
+function copyObject(obj) {
+	return Object.assign({}, obj);
+}
+
+function checkIfFinite(num) {
+	return Number.isFinite(num);
+}
+
+function areAllNumbersFinite(arr) {
+	return arr.every(Number.isFinite);
+}
+
+function convertArrayLikeObject(obj) {
+	return Array.from(obj);
+}
+
+function displayEvenArguments() {
+	return Array.from(arguments).filter(val => val % 2 === 0);
+}
+```
+
 ## D3
 
 ## React
