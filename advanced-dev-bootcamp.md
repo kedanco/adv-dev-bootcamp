@@ -1238,7 +1238,11 @@ Motorcycle.prototype = Object.create(Vehicle.prototype);
 Motorcycle.prototype.constructor = Motorcycle;
 ```
 
+===============================
+
 ### Node, Express, Mongo
+
+===============================
 
 1. Setting up node `npm init`
 2. Install Express `npm i -D express`
@@ -1344,7 +1348,11 @@ router
 module.exports = router;
 ```
 
+===============================
+
 ### Single-Page App
+
+===============================
 
 - Serve Static Files
   > Make sure you have included Bodyparser
@@ -1368,7 +1376,11 @@ Front-end code in app.js
 
 `event.stopPropagation();` stops event from bubbling up to parent DOM elements.
 
+===============================
+
 ### ES2015 Part 1
+
+===============================
 
 **const**
 
@@ -1546,7 +1558,11 @@ function reverseArray(arr) {
 - Object destructuring is very useful for reducing duplication and passing in default parameters as a destructured object
 - Array destructuring can also be used for swapping variables in an array without a separate swap function
 
+===============================
+
 ### ES2015 Part 2
+
+===============================
 
 **class**
 In JS, there is no built-in support for `class` and OOP. We can use OOP to reduce code duplication and improve readability by using classes. In JS, This is done by using constructor functions, and the prototype property.
@@ -1825,6 +1841,251 @@ function displayEvenArguments() {
 }
 ```
 
+===============================
+
+### ES2016
+
+===============================
+
+**Exponential Operator `**`\*\*
+
+`Math.pow(2,4)` -> `2**4`
+
+`total =** num`
+
+**[].includes**
+Instead of checking with `arr.indexOf(3)`, we can do `arr.includes(3)`
+
+===============================
+
+### ES2017
+
+===============================
+
+**padStart and padEnd**
+
+- used for standardising string length, prepending or appending to the string.
+
+```js
+"awesome".padStart(10); //"   awesome"
+"awesome".padStart(10, "!"); //"!!!awesome"
+
+"awesome".padEnd(10, "!"); //awesome!!!
+```
+
+**Async functions**
+
+- Special kind of function using the word `async`
+- simplify writing async code, specifically Promises.
+- `await` keyword can only be used inside async functions
+
+No .then, callback, or yield necessary.
+
+```js
+async function getMovieData() {
+	console.log("Starting");
+	let movieData = await $.getJSON(
+		"https://omdbapi.com?t=titanic&apikey=thewdb"
+	);
+	// this line does NOT run until promise is resolved
+	console.log("all done!");
+	console.log(movieData);
+}
+
+getMovieData();
+```
+
+Handling Errors:
+
+```js
+async function getUser(user) {
+	try {
+		let response = await $.getJSON(`https://api.github.com/users/${user}`);
+		console.log(response.name);
+	} catch (e) {
+		console.log("User does not exist");
+	}
+}
+```
+
+Dealing with HTTP Requests, having 2 `async, await` requests in the same function will cause blockers. 2nd HTTP request does not get made until first promise is resolved.
+
+Refactor -> Start the HTTP Requests in parallel, and await their resolved promise.
+
+```js
+async function getMovieData() {
+	let titanicPromise = $.getJSON("https://omdbapi.com?t=titanic&apikey=thewdb");
+	let shrekPromise = $.getJSON("https://omdbapi.com?t=shrek&apikey=thewdb");
+
+	let titanicData = await titanicPromise;
+	let shrekData = await shrekPromise;
+
+	console.log(titanicData);
+	console.log(shrekData);
+}
+```
+
+We can also use Promise.all to await multiple resolved promises.
+Returned values are in an array.
+
+```js
+async function getMovieData(first,second){
+	let moviesList = await Promise.all([
+		$.getJSON(`https://omdbapi.com?t=${first}&apikey=thewdb`);
+		$.getJSON(`https://omdbapi.com?t=${second}&apikey=thewdb`);
+	]);
+	console.log(moviesList[0].year, moviesList[1].year);
+}
+```
+
+**Object Rest**
+
+- Gather remaining (rest) of keys and values in an object and create a new one out of them
+
+```js
+let instructor = {
+	first: "Elie",
+	last: "Schoppik",
+	job: "Instructor",
+	numSiblings: 3
+};
+
+let { first, last, ...data } = instructor;
+first; // 'Elie'
+last; // 'Schoppik'
+data; //  {job: 'Instructor',numSiblings:3}
+```
+
+**Object Spread**
+
+- Spread out keys and values from one object to another
+- Great for creating objects starting w/ default values, concise alternative to Object.assign
+
+```js
+let instructor = { first: "Elie", last: "Schoppik", job: "instructor" };
+let instructor2 = { ...instructor, first: "Tim", last: "Garcia" };
+
+let defaults = { job: "Instructor", ownsCat: true, ownsDog: true };
+let matt = { ...defaults, ownsCat: false };
+let colt = { ...defaults, ownsDog: false };
+```
+
+**SUMMARY**
+
+- ES2016 provides `**` operator and `[].includes`
+- ES2017 provides helpful string metods and introduces async functions.
+- `async/await` keywords in ES2017 allow for writing synchronous looking functions that are actually async
+- We can combine async functions w/ Promise.all to create readable sync-looking code
+- The rest and spread operator are proposed changes to JS.
+
 ## D3
+
+To load D3, just add the script link in to a HTML Page.
+
+d3.select - single element
+d3.selectAll - multiple elements
+
+These return a `Selection` object with `groups` and `parents`
+
+`selection.nodes()` - return an array of HTML elements
+`selection.node()` - return the first element
+
+Use these methods as setters and getters
+`selection.style`
+`selection.attr`
+`selection.text`
+`selection.html`
+`selection.property`
+
+All these functions allow us to use callbacks. 1 function ran multiple times for different elements.
+
+Append Elements
+`d3.append(element)`
+
+Remove Elements
+`selection.remove()`
+
+Method chaining
+
+```js
+d3.select(".outer")
+	.style("color", "purple")
+	.select("div")
+	.style("font-size", "30px")
+	.style("background-color", "orange")
+	.select("div")
+	.style("border", "8px solid blue");
+```
+
+`selection.classed(classList, true)`
+2nd Option is a boolean asking if it's set (true) or removed (false)
+
+### Event Listeners
+
+Most recent listener for the same event on the same element will replace previous listeners.
+`selection.on(eventType,callback)`
+
+To access the Event object, we need to use `d3.event` instead of the normal process.
+
+### Data Joins, Enter Selections
+
+D3 provides us with a streamlined way to connect DOM elements with data sets.
+
+`.__data__` -> placeholder notes that don't exist in the DOM. We'll use `.enter()` to create D3 elements with these enter notes. Then use append to append these elements into the DOM.
+
+```js
+d3.select("#quotes")
+	.style("list-style", "none") // convenient to style
+	.selectAll("li") // No li, but returns selection
+	.data(quotes) //converts quotes array into data
+	.enter() // creates the D3 elements for data
+	.append("li") //Append to DOM
+	.text(function(d, i) {
+		//data,index bound to current element
+		return d.quote; //add text content
+	})
+	.style("font-size", d => (d.quote.length < 25 ? "2em" : "1em")); //conditional styling
+```
+
+### Exit Selections, Key Functions
+
+When you remove a part of the data that D3 has used for enter, the corresponding element will be slated for removal since there's no data to be matched to it.
+`_enter: [Array(4)]` -> 1 was removed from Array of 5
+`_exit: [undefined x4, li]` -> popped li added to `_exit`.
+
+```js
+d3.selectAll("li")
+	.data(quotes)
+	.exit()
+	.remove();
+```
+
+`selection.data(dataArr [, keyFunction])`
+Key function -> return value used to match elements with data, compared to original matching by index.
+
+```js
+d3.selectAll("li")
+	.data(nonRQuotes, function(d) {
+		//revise data, re-render view
+		return d.quote;
+	})
+	.exit();
+```
+
+### General Update Pattern
+
+Enter -> Data with no elements
+Update -> Data with elements
+Exit -> Elements with no data
+
+Having a subsequent `Enter` will only affect the new elements added. To target all (new and existing) element we can use `selection.merge`.
+
+1. Grab the update selection, make any changes unique to that selection, and store the selection in a variable.
+2. Grab the exit selection and remove any unnesessary elements.
+3. Grab the enter selection and make any changes unique to that selection.
+4. Merge the enter and update selections, and make any changes that you want to be shared across both selections.
+
+
+
 
 ## React
